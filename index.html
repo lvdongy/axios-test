@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>axios</title>
+</head>
+<body>
+    <h1>axios-test</h1>
+
+    <script type="module">
+        import axios from './axios.js'
+
+        axios.defaults.baseURL = 'http://localhost:3000';
+        axios.defaults.timeout = 3000;
+
+        axios.interceptors.request.use(
+            config => {
+                console.log('我拿到config1',config);
+                // throw new Error('xixi');
+                // config.headers.token = 'my-token';
+                return config
+            },
+            err => {
+                console.log('我收到request错误了1',err);
+                return Promise.reject(err);
+            }
+        )
+        axios.interceptors.request.use(
+            config => {
+                console.log('我拿到config2',config);
+                return config
+            },
+            err => {
+                console.log('我收到request错误了2',err);
+                return Promise.reject(err);
+            }
+        )
+
+        axios.interceptors.response.use(
+            res => {
+                console.log('我拿到res1',res);
+                return res.data
+            },
+            err => {
+                console.log('我收到response错误了1',err);
+                return Promise.reject(err);
+            }
+        )
+        
+
+        let axios2 = axios.create({
+            baseURL: 'http://api.com',
+            timeout: 66666,
+        })
+
+        console.log({axios}, {axios2});
+        // axios2.get('/demo', { params: {a: 2} });
+        axios({
+            methods: 'GET',
+            url: '/demo',
+            params: {
+                a: 1,
+                b: [2,3,4]
+            },
+        }).then((res) => {
+            console.log('res:', res);
+        }).catch((err) => {
+            console.log('err:', err);
+        })
+
+        // axios.get('/demo', {
+        //     params: {
+        //         a: 1,
+        //         b: [2,3,4]
+        //     },
+        //     data: {
+        //         data: 1
+        //     }
+        // }).then((res) => {
+        //     console.log('res:', res);
+        // }).catch((err) => {
+        //     console.log('err:', err);
+        // })
+
+        // axios.post(
+        //     '/post',
+        //     { myData: 'data', obj: { a: 1 } },
+        //     {
+        //         timeout: 500
+        //     }
+        // ).then((res) => {
+        //     console.log('res:', res);
+        // }).catch((err) => {
+        //     console.log('err:', err);
+        // })
+
+        // request({
+        //     methods: 'POST',
+        //     url: 'http://localhost:3000/post',
+        //     data: {
+        //         data: 'this is data'
+        //     },
+        // }).then((res) => {
+        //     console.log('res:', res);
+        // }).catch((err) => {
+        //     console.log('err:', err);
+        // })
+    </script>
+</body>
+</html>
