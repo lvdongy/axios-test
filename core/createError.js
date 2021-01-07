@@ -1,7 +1,5 @@
-export function createError(response){
-    console.log(response);
+export function createError(message){
     return {
-        status: response.status,
-        message: 'Request failed with status code ' + response.status,
+        message
     }
 }

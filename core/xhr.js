@@ -33,7 +33,7 @@ function dispatchRequest(config){
             if(!config.validateStatus || config.validateStatus(response.status)){
                 resole(response);
             }else{
-                reject(createError(response));
+                reject(createError(response.statusText || 'xhr error'));
             }
 
             // 最后将xhr清除
@@ -51,17 +51,37 @@ function dispatchRequest(config){
             }
         }
 
-        // 请求body
-        let requestData = config.data || null;
-        if(requestData && typeof requestData === 'object'){
-            requestData = JSON.stringify(requestData);
-        }
-
         // 设置超时时长
         xhr.timeout = config.timeout;
         xhr.ontimeout = function(e){
             console.error(`timeout: ${config.timeout}`);
             if(config.ontimeout) config.ontimeout(e);
+        }
+
+        // 请求被终止时
+        xhr.onabort = function(e){
+            reject(createError('abort')); 
+            xhr = null;
+        }
+
+        // 请求异常时
+        xhr.onerror = function(e){
+            reject(createError('error'));
+            xhr = null;
+        }
+
+        // 设置上传，下载事件
+        if(typeof config.onDownloadProgress === 'function'){
+            xhr.addEventListener('progress', config.onDownloadProgress);
+        }
+        if(typeof config.onUploadProgress === 'function'){
+            xhr.upload.addEventListener('progress', config.onUploadProgress);
+        }
+
+        // 请求body
+        let requestData = config.data || null;
+        if(requestData && typeof requestData === 'object'){
+            requestData = JSON.stringify(requestData);
         }
 
         xhr.send(requestData);
